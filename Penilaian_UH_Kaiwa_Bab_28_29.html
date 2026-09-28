@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Penilaian UH Kaiwa Bab 28 & 29</title>
+<style>
+  *{box-sizing:border-box}
+  body{font-family:Arial,sans-serif;margin:0;background:#f6f7fb;color:#222}
+  header{background:#fff;padding:22px 28px;border-bottom:1px solid #ddd;position:sticky;top:0;z-index:5}
+  h1{margin:0 0 5px;font-size:24px}
+  .subtitle{color:#666;font-size:14px}
+  main{max-width:1200px;margin:22px auto;padding:0 16px}
+  .tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+  button,.tab{border:0;border-radius:8px;padding:10px 15px;cursor:pointer;font-size:14px}
+  .tab{background:#e8eaf0}.tab.active{background:#222;color:white}
+  .card{background:#fff;border:1px solid #ddd;border-radius:12px;padding:18px;margin-bottom:18px;box-shadow:0 2px 8px #00000008}
+  label{font-weight:600;font-size:14px;display:block;margin-bottom:7px}
+  input,select{width:100%;padding:10px;border:1px solid #ccc;border-radius:7px;background:white}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .rubric{width:100%;border-collapse:collapse;margin-top:12px}
+  .rubric th,.rubric td{border:1px solid #ddd;padding:10px;vertical-align:top;font-size:13px}
+  .rubric th{background:#f0f1f5}
+  .rubric td:first-child{width:18%;font-weight:700}
+  .score select{min-width:100px}
+  .totalbox{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+  .result{background:#f0f1f5;border-radius:9px;padding:13px 18px;min-width:150px}
+  .result strong{display:block;font-size:20px;margin-top:4px}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+  .primary{background:#222;color:#fff}.secondary{background:#e8eaf0}.danger{background:#f5dede}
+  .hidden{display:none}
+  .note{font-size:13px;color:#666;line-height:1.5}
+  .summary table{width:100%;border-collapse:collapse}
+  .summary th,.summary td{border:1px solid #ddd;padding:8px;text-align:left;font-size:13px}
+  .summary th{background:#f0f1f5}
+  .pill{display:inline-block;padding:4px 8px;border-radius:99px;background:#eee;font-size:12px}
+  @media(max-width:750px){.grid{grid-template-columns:1fr}.rubric{font-size:12px}.rubric th,.rubric td{padding:7px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Penilaian UH Kaiwa Bab 28 & 29</h1>
+  <div class="subtitle">Role Play — Penilaian Kelompok & Individu</div>
+</header>
+
+<main>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('group',this)">Penilaian Kelompok</button>
+    <button class="tab" onclick="showTab('individual',this)">Penilaian Individu</button>
+    <button class="tab" onclick="showTab('summary',this)">Rekap Nilai</button>
+  </div>
+
+  <section id="group">
+    <div class="card">
+      <h2>Penilaian Kelompok</h2>
+      <div class="grid">
+        <div>
+          <label>Kelompok</label>
+          <select id="groupSelect" onchange="loadGroup()">
+            <option value="1">Kelompok 1</option><option value="2">Kelompok 2</option>
+            <option value="3">Kelompok 3</option><option value="4">Kelompok 4</option>
+            <option value="5">Kelompok 5</option><option value="6">Kelompok 6</option>
+            <option value="7">Kelompok 7</option><option value="8">Kelompok 8</option>
+            <option value="9">Kelompok 9</option>
+          </select>
+        </div>
+        <div>
+          <label>Situasi</label>
+          <input id="groupSituation" placeholder="Contoh: Kondisi kesehatan" oninput="saveGroup()">
+        </div>
+      </div>
+
+      <table class="rubric">
+        <thead><tr><th>Kriteria</th><th>Berkembang (1)</th><th>Cakap (2)</th><th>Mahir (3)</th><th>Skor</th></tr></thead>
+        <tbody id="groupBody"></tbody>
+      </table>
+
+      <div class="totalbox">
+        <div class="result">Total Kelompok<strong id="groupTotal">0 / 21</strong></div>
+        <div class="result">Nilai Kelompok<strong id="groupValue">0</strong></div>
+      </div>
+      <div class="actions">
+        <button class="primary" onclick="saveGroup()">Simpan</button>
+        <button class="secondary" onclick="resetGroup()">Kosongkan kelompok ini</button>
+      </div>
+      <p class="note">Nilai kelompok = total skor ÷ 21 × 100. Pilih skor 1–3 untuk setiap kriteria.</p>
+    </div>
+  </section>
+
+  <section id="individual" class="hidden">
+    <div class="card">
+      <h2>Penilaian Individu</h2>
+      <div class="grid">
+        <div>
+          <label>Kelompok</label>
+          <select id="indGroup" onchange="loadIndividual()">
+            <option value="1">Kelompok 1</option><option value="2">Kelompok 2</option>
+            <option value="3">Kelompok 3</option><option value="4">Kelompok 4</option>
+            <option value="5">Kelompok 5</option><option value="6">Kelompok 6</option>
+            <option value="7">Kelompok 7</option><option value="8">Kelompok 8</option>
+            <option value="9">Kelompok 9</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:14px;background:#fafafa">
+        <label>Nama 4 anggota kelompok</label>
+        <div class="grid">
+          <input id="studentName1" placeholder="Anggota 1">
+          <input id="studentName2" placeholder="Anggota 2">
+          <input id="studentName3" placeholder="Anggota 3">
+          <input id="studentName4" placeholder="Anggota 4">
+        </div>
+        <p class="note">Setelah memasukkan nama, pilih nama siswa yang sedang dinilai.</p>
+        <select id="activeStudent" onchange="switchStudent()">
+          <option value="1">Anggota 1</option>
+          <option value="2">Anggota 2</option>
+          <option value="3">Anggota 3</option>
+          <option value="4">Anggota 4</option>
+        </select>
+      </div>
+
+      <table class="rubric">
+        <thead><tr><th>Kriteria</th><th>Berkembang (1)</th><th>Cakap (2)</th><th>Mahir (3)</th><th>Skor</th></tr></thead>
+        <tbody id="individualBody"></tbody>
+      </table>
+
+      <div class="totalbox">
+        <div class="result">Total Individu<strong id="indTotal">0 / 18</strong></div>
+        <div class="result">Nilai Individu<strong id="indValue">0</strong></div>
+      </div>
+      <div class="actions">
+        <button class="primary" onclick="addStudent()">Simpan 4 Anggota ke Rekap</button>
+        <button class="secondary" onclick="clearIndividual()">Kosongkan</button>
+      </div>
+      <p class="note">Nilai individu = total skor ÷ 18 × 100. Setelah selesai menilai satu siswa, klik “Simpan ke Rekap”, lalu masukkan siswa berikutnya.</p>
+    </div>
+  </section>
+
+  <section id="summary" class="hidden">
+    <div class="card summary">
+      <h2>Rekap Nilai</h2>
+      <div class="actions">
+        <button class="primary" onclick="downloadCSV()">Export CSV</button>
+        <button class="secondary" onclick="clearAll()">Hapus seluruh data</button>
+      </div>
+      <h3>Nilai Kelompok</h3>
+      <table><thead><tr><th>Kelompok</th><th>Situasi</th><th>Total</th><th>Nilai</th></tr></thead><tbody id="groupSummary"></tbody></table>
+      <h3>Nilai Individu</h3>
+      <table><thead><tr><th>No.</th><th>Nama</th><th>Kelompok</th><th>Total</th><th>Nilai</th></tr></thead><tbody id="indSummary"></tbody></table>
+    </div>
+  </section>
+</main>
+
+<script>
+const groupCriteria = [
+["Kesesuaian konteks & penggunaan pola kemampuan",
+"Percakapan kurang sesuai dengan situasi yang diperoleh dan isi percakapan masih terbatas.",
+"Percakapan sesuai dengan situasi yang diperoleh dan isi percakapan cukup jelas.",
+"Percakapan sangat sesuai dengan situasi yang diperoleh, dikembangkan dengan baik, dan alurnya natural."],
+["Tata bahasa",
+"Penggunaan pola kalimat yang berkaitan dengan kondisi kesehatan, kebiasaan/aktivitas, dan keadaan atau permasalahan kota (～とき, ～ます/～ています/～ていません, これから～ます/～ません, ～があります/～います, ～や～があります, ～はどんなまちですか, dan ～です。そして～です) masih banyak mengalami kesalahan sehingga mengganggu pemahaman.",
+"Menggunakan pola kalimat yang berkaitan dengan kondisi kesehatan, kebiasaan/aktivitas, dan keadaan atau permasalahan kota (～とき, ～ます/～ています/～ていません, これから～ます/～ません, ～があります/～います, ～や～があります, ～はどんなまちですか, dan ～です。そして～です) dengan cukup tepat, meskipun masih terdapat beberapa kesalahan.",
+"Menggunakan pola kalimat yang berkaitan dengan kondisi kesehatan, kebiasaan/aktivitas, dan keadaan atau permasalahan kota (～とき, ～ます/～ています/～ていません, これから～ます/～ません, ～があります/～います, ～や～があります, ～はどんなまちですか, dan ～です。そして～です) dengan tepat dan sesuai konteks percakapan."],
+["Kosakata",
+"Penguasaan kosakata masih terbatas, terutama kosakata tentang kesehatan, kegiatan/kebiasaan sehari-hari, tempat, kondisi, dan permasalahan kota.",
+"Menggunakan kosakata tentang kesehatan, kegiatan/kebiasaan sehari-hari, tempat, kondisi, dan permasalahan kota dengan cukup tepat dan beragam.",
+"Menggunakan kosakata tentang kesehatan, kegiatan/kebiasaan sehari-hari, tempat, kondisi, dan permasalahan kota dengan tepat, beragam, dan sesuai konteks."],
+["Pengucapan",
+"Pelafalan kurang jelas dan beberapa kesalahan mengganggu pemahaman percakapan.",
+"Pelafalan cukup jelas, meskipun masih terdapat beberapa kesalahan kecil yang tidak terlalu mengganggu pemahaman.",
+"Pelafalan jelas, tepat, intonasi baik, mudah dipahami."],
+["Kelancaran & hafalan",
+"Masih sering berhenti, ragu-ragu, atau melihat catatan saat melakukan percakapan dan mengucapkan dialog bersama.",
+"Cukup lancar dengan sedikit jeda dan masih terdapat beberapa bagian yang kurang hafal.",
+"Sangat lancar, percaya diri, dan mampu mengucapkan dialog tanpa melihat catatan."],
+["Ekspresi & kepercayaan diri",
+"Suara kurang jelas, ekspresi minim, dan masih terlihat ragu saat tampil.",
+"Suara cukup jelas dan ekspresi cukup sesuai, tetapi kepercayaan diri belum stabil.",
+"Suara jelas, ekspresi sesuai, dan percaya diri saat melakukan percakapan."],
+["Kerja sama dalam kelompok",
+"Sebagian anggota kurang terlibat dalam menyusun dan menghafalkan dialog; kerja sama belum optimal.",
+"Sebagian besar anggota terlibat dalam penyusunan dan penghafalan dialog serta saling mendukung.",
+"Seluruh anggota berkontribusi dalam penyusunan dan penghafalan dialog, serta mampu tampil bersama dengan kompak."]
+];
+
+const indCriteria = [
+["Tata Bahasa","Penggunaan pola kalimat yang dipelajari masih banyak mengalami kesalahan sehingga mengganggu pemahaman.","Menggunakan pola kalimat yang dipelajari dengan cukup tepat, meskipun masih terdapat beberapa kesalahan.","Menggunakan pola kalimat yang dipelajari dengan tepat dan sesuai konteks percakapan."],
+["Kosakata","Penggunaan kosakata masih terbatas dan terdapat beberapa kesalahan dalam pemilihan kata.","Menggunakan kosakata yang cukup beragam dan sesuai konteks, meskipun masih terdapat beberapa kesalahan.","Menggunakan kosakata yang beragam, tepat, dan sesuai konteks percakapan."],
+["Pengucapan","Pelafalan kurang jelas dan banyak kesalahan sehingga mengganggu pemahaman.","Pelafalan cukup jelas, meskipun masih terdapat beberapa kesalahan.","Pelafalan jelas dan tepat sehingga mudah dipahami."],
+["Kelancaran","Sering berhenti, ragu-ragu, atau kehilangan alur saat berbicara.","Cukup lancar, tetapi masih terdapat beberapa jeda atau keraguan.","Berbicara dengan lancar dan alami dengan sedikit atau tanpa jeda yang mengganggu."],
+["Ekspresi & kepercayaan diri","Kurang percaya diri, suara kurang jelas, dan ekspresi masih minim.","Cukup percaya diri dengan ekspresi dan intonasi yang cukup sesuai.","Sangat percaya diri, suara jelas, serta ekspresi dan intonasi mendukung percakapan."],
+["Pemahaman & respons","Kurang memahami isi kaiwa dan kesulitan memberikan respons yang sesuai.","Memahami sebagian besar isi kaiwa dan dapat memberikan respons yang cukup sesuai.","Memahami isi kaiwa dengan baik dan memberikan respons secara tepat dan natural."]
+];
+
+let currentIndScores = Array(6).fill("");
+let fourStudents = [
+  {name:"", scores:Array(6).fill("")},
+  {name:"", scores:Array(6).fill("")},
+  {name:"", scores:Array(6).fill("")},
+  {name:"", scores:Array(6).fill("")}
+];
+
+function groupKey(){return "uh_group_"+document.getElementById("groupSelect").value}
+function saveGroup(){
+  const key=groupKey(), scores=groupCriteria.map((_,i)=>document.getElementById("groupScore"+i).value);
+  const data={situation:document.getElementById("groupSituation").value,scores};
+  localStorage.setItem(key,JSON.stringify(data)); updateGroupTotal();
+}
+function loadGroup(){
+  const d=JSON.parse(localStorage.getItem(groupKey())||"null")||{situation:"",scores:Array(7).fill("")};
+  document.getElementById("groupSituation").value=d.situation||"";
+  d.scores.forEach((v,i)=>document.getElementById("groupScore"+i).value=v||"");
+  updateGroupTotal();
+}
+function updateGroupTotal(){
+  let s=groupCriteria.reduce((a,_,i)=>a+(Number(document.getElementById("groupScore"+i).value)||0),0);
+  document.getElementById("groupTotal").textContent=s+" / 21";
+  document.getElementById("groupValue").textContent=s?((s/21)*100).toFixed(1):"0";
+  localStorage.setItem(groupKey(),JSON.stringify({situation:document.getElementById("groupSituation").value,scores:groupCriteria.map((_,i)=>document.getElementById("groupScore"+i).value)}));
+}
+function resetGroup(){localStorage.removeItem(groupKey());loadGroup();}
+
+function saveCurrentStudent(){
+  const idx=Number(document.getElementById("activeStudent").value)-1;
+  fourStudents[idx].name=document.getElementById("studentName"+(idx+1)).value.trim();
+  fourStudents[idx].scores=indCriteria.map((_,i)=>document.getElementById("individualScore"+i).value);
+}
+function switchStudent(){
+  saveCurrentStudent();
+  const idx=Number(document.getElementById("activeStudent").value)-1;
+  document.getElementById("studentName"+(idx+1)).value=fourStudents[idx].name;
+  indCriteria.forEach((_,i)=>document.getElementById("individualScore"+i).value=fourStudents[idx].scores[i]||"");
+  updateIndScores();
+}
+function updateIndScores(){
+  currentIndScores=indCriteria.map((_,i)=>document.getElementById("individualScore"+i).value);
+  let s=currentIndScores.reduce((a,v)=>a+(Number(v)||0),0);
+  document.getElementById("indTotal").textContent=s+" / 18";
+  document.getElementById("indValue").textContent=s?((s/18)*100).toFixed(1):"0";
+  saveCurrentStudent();
+}
+function loadIndividual(){
+  fourStudents=[
+    {name:"",scores:Array(6).fill("")},{name:"",scores:Array(6).fill("")},
+    {name:"",scores:Array(6).fill("")},{name:"",scores:Array(6).fill("")}
+  ];
+  for(let i=1;i<=4;i++) document.getElementById("studentName"+i).value="";
+  document.getElementById("activeStudent").value="1";
+  indCriteria.forEach((_,i)=>document.getElementById("individualScore"+i).value="");
+  updateIndScores();
+}
+function clearIndividual(){loadIndividual();}
+function addStudent(){
+  saveCurrentStudent();
+  const group=document.getElementById("indGroup").value;
+  if(fourStudents.some(x=>!x.name)){
+    alert("Masukkan nama lengkap 4 anggota kelompok terlebih dahulu."); return;
+  }
+  if(fourStudents.some(x=>x.scores.some(v=>Number(v)<1||Number(v)>3))){
+    alert("Isi semua skor individu untuk keempat anggota terlebih dahulu."); return;
+  }
+  const arr=JSON.parse(localStorage.getItem("uh_students")||"[]");
+  fourStudents.forEach(x=>{
+    const total=x.scores.reduce((a,b)=>a+Number(b),0);
+    arr.push({name:x.name,group,scores:x.scores,total,value:(total/18)*100});
+  });
+  localStorage.setItem("uh_students",JSON.stringify(arr));
+  alert("4 anggota Kelompok "+group+" sudah masuk ke rekap.");
+  clearIndividual();
+  renderSummary();
+}
+
+function renderSummary(){
+  const gb=document.getElementById("groupSummary");gb.innerHTML="";
+  for(let g=1;g<=9;g++){
+    const d=JSON.parse(localStorage.getItem("uh_group_"+g)||"null");
+    const scores=d?.scores||Array(7).fill("");
+    const total=scores.reduce((a,v)=>a+(Number(v)||0),0);
+    gb.innerHTML+=`<tr><td>Kelompok ${g}</td><td>${d?.situation||"-"}</td><td>${total} / 21</td><td>${total?((total/21)*100).toFixed(1):"0"}</td></tr>`;
+  }
+  const ib=document.getElementById("indSummary");ib.innerHTML="";
+  const arr=JSON.parse(localStorage.getItem("uh_students")||"[]");
+  arr.forEach((x,i)=>ib.innerHTML+=`<tr><td>${i+1}</td><td>${x.name}</td><td>Kelompok ${x.group}</td><td>${x.total} / 18</td><td>${x.value.toFixed(1)}</td></tr>`);
+}
+function showTab(id,btn){
+  ["group","individual","summary"].forEach(x=>document.getElementById(x).classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  btn.classList.add("active");
+  if(id==="summary")renderSummary();
+}
+function clearAll(){
+  if(!confirm("Yakin ingin menghapus semua data penilaian?"))return;
+  for(let g=1;g<=9;g++)localStorage.removeItem("uh_group_"+g);
+  localStorage.removeItem("uh_students");
+  renderSummary();loadGroup();loadIndividual();
+}
+function downloadCSV(){
+  let rows=[["Jenis","Nama/Kelompok","Situasi","Total","Nilai"]];
+  for(let g=1;g<=9;g++){
+    const d=JSON.parse(localStorage.getItem("uh_group_"+g)||"null");
+    const scores=d?.scores||Array(7).fill("");
+    const total=scores.reduce((a,v)=>a+(Number(v)||0),0);
+    rows.push(["Kelompok","Kelompok "+g,d?.situation||"",total+"/21",total?((total/21)*100).toFixed(1):"0"]);
+  }
+  const arr=JSON.parse(localStorage.getItem("uh_students")||"[]");
+  arr.forEach(x=>rows.push(["Individu",x.name,"Kelompok "+x.group,x.total+"/18",x.value.toFixed(1)]));
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="Rekap_Nilai_UH_Kaiwa_Bab_28_29.csv";a.click();
+}
+loadGroup();loadIndividual();renderSummary();
+</script>
+</body>
+</html>
