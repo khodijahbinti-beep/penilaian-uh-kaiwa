@@ -133,7 +133,7 @@
         <button class="primary" onclick="addStudent()">Simpan 4 Anggota ke Rekap</button>
         <button class="secondary" onclick="clearIndividual()">Kosongkan</button>
       </div>
-      <p class="note">Nilai individu = total skor ÷ 18 × 100. Setelah selesai menilai satu siswa, klik “Simpan ke Rekap”, lalu masukkan siswa berikutnya.</p>
+      <p class="note">Nilai individu = total skor ÷ 18 × 100. Nilai keempat anggota dimasukkan satu per satu (ganti anggota lewat dropdown), lalu klik “Simpan 4 Anggota ke Rekap”.</p>
     </div>
   </section>
 
@@ -194,6 +194,7 @@ const indCriteria = [
 ];
 
 let currentIndScores = Array(6).fill("");
+let activeIdx = 0;
 let fourStudents = [
   {name:"", scores:Array(6).fill("")},
   {name:"", scores:Array(6).fill("")},
@@ -222,15 +223,13 @@ function updateGroupTotal(){
 function resetGroup(){localStorage.removeItem(groupKey());loadGroup();}
 
 function saveCurrentStudent(){
-  const idx=Number(document.getElementById("activeStudent").value)-1;
-  fourStudents[idx].name=document.getElementById("studentName"+(idx+1)).value.trim();
-  fourStudents[idx].scores=indCriteria.map((_,i)=>document.getElementById("individualScore"+i).value);
+  for(let i=1;i<=4;i++) fourStudents[i-1].name=document.getElementById("studentName"+i).value.trim();
+  fourStudents[activeIdx].scores=indCriteria.map((_,i)=>document.getElementById("individualScore"+i).value);
 }
 function switchStudent(){
   saveCurrentStudent();
-  const idx=Number(document.getElementById("activeStudent").value)-1;
-  document.getElementById("studentName"+(idx+1)).value=fourStudents[idx].name;
-  indCriteria.forEach((_,i)=>document.getElementById("individualScore"+i).value=fourStudents[idx].scores[i]||"");
+  activeIdx=Number(document.getElementById("activeStudent").value)-1;
+  indCriteria.forEach((_,i)=>document.getElementById("individualScore"+i).value=fourStudents[activeIdx].scores[i]||"");
   updateIndScores();
 }
 function updateIndScores(){
@@ -241,6 +240,7 @@ function updateIndScores(){
   saveCurrentStudent();
 }
 function loadIndividual(){
+  activeIdx=0;
   fourStudents=[
     {name:"",scores:Array(6).fill("")},{name:"",scores:Array(6).fill("")},
     {name:"",scores:Array(6).fill("")},{name:"",scores:Array(6).fill("")}
@@ -310,6 +310,21 @@ function downloadCSV(){
   const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="Rekap_Nilai_UH_Kaiwa_Bab_28_29.csv";a.click();
 }
+
+function buildRubric(bodyId, criteria, prefix, onchangeFn){
+  document.getElementById(bodyId).innerHTML = criteria.map((c,i)=>`
+    <tr>
+      <td>${c[0]}</td><td>${c[1]}</td><td>${c[2]}</td><td>${c[3]}</td>
+      <td class="score">
+        <select id="${prefix}${i}" onchange="${onchangeFn}">
+          <option value="">-</option><option value="1">1</option>
+          <option value="2">2</option><option value="3">3</option>
+        </select>
+      </td>
+    </tr>`).join("");
+}
+buildRubric("groupBody", groupCriteria, "groupScore", "saveGroup()");
+buildRubric("individualBody", indCriteria, "individualScore", "updateIndScores()");
 loadGroup();loadIndividual();renderSummary();
 </script>
 </body>
